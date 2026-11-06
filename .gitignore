@@ -4,3 +4,9 @@ __pycache__/
 .pytest_cache/
 .env
 .streamlit/secrets.toml
+
+# Frontend dependencies and generated output
+node_modules/
+dist/
+.env.*
+!.env.example
