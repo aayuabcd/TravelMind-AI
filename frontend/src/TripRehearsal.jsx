@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 
 const arrival = 13 * 60;          // Scheduled arrival: 1:00 PM
 const transfer = 90;              // Airport to hotel and check-in
@@ -13,29 +13,31 @@ function clock(minutes) {
   return `${hour % 12 || 12}:${minute} ${hour >= 12 ? "PM" : "AM"}`;
 }
 
-function rehearse(delay) {
+function rehearse(delay, priority = "sunset") {
   const ready = arrival + delay + transfer;
   const latestBeachDeparture = sunset - beachTravel;
   const available = latestBeachDeparture - ready;
 
-  const shopping = available >= minShopping
-    ? Math.min(fullShopping, available)
-    : 0;
+  const protectShopping = priority === "shopping";
+  const shopping = protectShopping
+    ? fullShopping
+    : available >= minShopping ? Math.min(fullShopping, available) : 0;
 
-  // Leave close to the sunset slot if early, or immediately if already late.
+  const earliestAfterShopping = ready + shopping + beachTravel;
+  const keepsSunset = earliestAfterShopping <= sunset;
   const beachDeparture = Math.max(ready + shopping, latestBeachDeparture);
-  const earliestBeachArrival = ready + beachTravel;
-  const keepsSunset = earliestBeachArrival <= sunset;
 
   let decision;
-  if (!keepsSunset) {
-    decision = `Even going straight to the beach gets you there at ${clock(earliestBeachArrival)}, ${-available} minutes after the sunset slot. Move the sunset to Day 2.`;
+  if (!keepsSunset && protectShopping) {
+    decision = `Keep the full ${fullShopping}-minute shopping visit. After shopping and the beach transfer, the earliest arrival is ${clock(earliestAfterShopping)}. Move the family sunset to Day 2.`;
+  } else if (!keepsSunset) {
+    decision = `Even going straight to the beach gets you there at ${clock(earliestAfterShopping)}. Move the family sunset to Day 2.`;
   } else if (shopping === 0) {
-    decision = "Skip shopping on Day 1 to keep the family sunset. The available time is shorter than the 30-minute minimum shopping visit.";
+    decision = "Skip shopping on Day 1 to keep the family sunset. Less than 30 minutes is available for shopping.";
   } else if (shopping < fullShopping) {
-    decision = `Shorten shopping to ${shopping} minutes. You can still reach the beach for the family sunset.`;
+    decision = `Shorten shopping to ${shopping} minutes and keep the family sunset on Day 1.`;
   } else {
-    decision = "Keep the full shopping visit and the family sunset. Both still fit on Day 1.";
+    decision = "The full shopping visit and the family sunset both fit on Day 1.";
   }
 
   return {
@@ -50,6 +52,7 @@ function rehearse(delay) {
 
 export default function TripRehearsal({ brief }) {
   const [delay, setDelay] = useState(0);
+  const [priority, setPriority] = useState("sunset");
 
   const isDemoRoute =
     brief.origin.trim().toLowerCase() === "mumbai" &&
@@ -58,7 +61,7 @@ export default function TripRehearsal({ brief }) {
   if (!isDemoRoute) return null;
 
   const original = rehearse(0);
-  const revised = rehearse(delay);
+  const revised = rehearse(delay, priority);
   const rows = [
     ["Flight arrival", "landing"],
     ["Ready after check-in", "hotel"],
@@ -71,8 +74,14 @@ export default function TripRehearsal({ brief }) {
     <section className="brief rehearsal" aria-label="Trip Rehearsal">
       <h3>Trip Rehearsal</h3>
       <p>What happens to your first evening in Goa if your flight arrives late?</p>
-      <p><strong>Keep if possible:</strong> the family sunset.
-        {" "}<strong>Flexible:</strong> shopping.</p>
+      <label>
+        Which experience should we protect?
+        <select name="tripPriority" value={priority}
+          onChange={event => setPriority(event.target.value)}>
+          <option value="sunset">Protect the family sunset</option>
+          <option value="shopping">Protect the full shopping visit</option>
+        </select>
+      </label>
 
       <label>
         Flight arrival delay: <strong>{delay} minutes</strong>
