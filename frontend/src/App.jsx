@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+﻿import TravelResults from "./TravelResults";
+import { useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Sparkles } from "@react-three/drei";
 import { Compass, ArrowUpRight, Mountain, Map, Sun, Pause, Play } from "lucide-react";
@@ -271,15 +272,21 @@ export default function App() {
               </div>
 
               <button className="button gold" type="submit">
-                Preview my trip brief <ArrowUpRight size={18} />
+                Search travel options <ArrowUpRight size={18} />
               </button>
               <p className="form-note">
-                Preview only. Flight searches, live weather, and AI itinerary
-                generation are not connected yet.
+                Search sample flights, hotels, and attractions by city.
               </p>
             </form>
 
             <div aria-live="polite">
+              {brief && (
+                <TravelResults brief={brief}
+                  key={JSON.stringify([brief.origin.trim(), brief.destination.trim()])}
+                  origin={brief.origin.trim()}
+                  destination={brief.destination.trim()}
+                />
+              )}
               {brief && (
                 <div className="brief">
                   <div className="eyebrow">YOUR JOURNEY AT A GLANCE</div>
@@ -316,3 +323,5 @@ export default function App() {
     </div>
   );
 }
+
+
