@@ -1,4 +1,5 @@
-﻿import { DailyWeather, tripDateKey, useTripWeather } from "./TripWeather";
+﻿import TripRehearsal from "./TripRehearsal";
+import { DailyWeather, tripDateKey, useTripWeather } from "./TripWeather";
 import { useState } from "react";
 
 const rupees = new Intl.NumberFormat("en-IN", {
@@ -73,6 +74,7 @@ export default function TripPlan({ brief, data }) {
         <p><strong>Known costs: {rupees.format(total)}.</strong> The full estimate needs both a flight fare and a room price.</p>
       )}
 
+      <TripRehearsal brief={brief} />
       <h4>Day-by-day itinerary</h4>
       <small>Weather by <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a></small>
       {schedule.map((places, index) => (
@@ -87,4 +89,5 @@ export default function TripPlan({ brief, data }) {
     </section>
   );
 }
+
 

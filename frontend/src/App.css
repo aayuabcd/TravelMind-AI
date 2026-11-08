@@ -112,3 +112,10 @@ html:has(.motion-off) { scroll-behavior: auto; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+.rehearsal input[type="range"] { padding: 0; accent-color: #e6c78c; }
+.rehearsal-table { overflow-x: auto; margin: 1rem 0; }
+.rehearsal-table table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.rehearsal-table caption { text-align: left; padding-bottom: 0.6rem; }
+.rehearsal-table th, .rehearsal-table td { text-align: left; padding: 0.6rem; border-bottom: 1px solid #dec28b33; }
+.rehearsal-table .changed { color: #ffe1a3; font-weight: 700; }
