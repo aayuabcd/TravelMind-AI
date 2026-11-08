@@ -1,4 +1,5 @@
-﻿import { useState } from "react";
+﻿import { DailyWeather, tripDateKey, useTripWeather } from "./TripWeather";
+import { useState } from "react";
 
 const rupees = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -18,6 +19,7 @@ function dayLabel(start, offset) {
 
 export default function TripPlan({ brief, data }) {
   const [allowance, setAllowance] = useState(800);
+  const forecast = useTripWeather(brief.destination);
   const days = Number(brief.days);
   const nights = days - 1;
   const budget = Number(brief.budget);
@@ -72,9 +74,11 @@ export default function TripPlan({ brief, data }) {
       )}
 
       <h4>Day-by-day itinerary</h4>
+      <small>Weather by <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a></small>
       {schedule.map((places, index) => (
         <div key={index}>
           <strong>Day {index + 1} · {dayLabel(brief.date, index)}</strong>
+          <DailyWeather forecast={forecast} date={tripDateKey(brief.date, index)} />
           <p>{places.length
             ? places.map(place => place.name).join(" → ")
             : "Free time for a local walk or rest."}</p>
@@ -83,3 +87,4 @@ export default function TripPlan({ brief, data }) {
     </section>
   );
 }
+
